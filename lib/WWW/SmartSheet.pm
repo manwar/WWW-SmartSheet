@@ -19,6 +19,7 @@ sub ua {
 	my $ua = LWP::UserAgent->new;
 	$ua->timeout(10);
 	$ua->default_header("Authorization" => "Bearer " . $self->token);
+	$ua->default_header("Content-Type" => "application/json");
 	return $ua;
 }
 
@@ -104,17 +105,22 @@ sub share_sheet {
 sub create_sheet {
 	my ($self, %args) = @_;
 
-	my $url = "$API_URL/sheets";
+	return $self->_post('sheets', \%args);
+}
+
+sub _post {
+	my ($self, $path, $data) = @_;
+
+	my $url = "$API_URL/$path";
 	my $ua = $self->ua;
-	$ua->default_header("Content-Type" => "application/json");
-	my $data = to_json(\%args);
-	#warn $data;
+	my $json = to_json($data);
+	#warn $json;
 	#warn Dumper $ua->default_headers;
 
 	my $req = HTTP::Request->new( 'POST', $url );
-	$req->content( $data );
+	$req->content( $json );
 	my $res = $ua->request( $req );
-	#my $res = $ua->post($url, Content => $data);
+	#my $res = $ua->post($url, Content => $json);
 
 	die $res->status_line if not $res->is_success;
 	return from_json $res->decoded_content;
@@ -129,7 +135,7 @@ sub create_sheet {
 sub add_column {
 	my ($self, $sheet_id, $column) = @_;
 
-	my $url = "$API_URL/sheet/$sheet_id/columns";
+	return $self->_post("sheet/$sheet_id/columns", $column );
 }
 
 =head2 insert_rows
