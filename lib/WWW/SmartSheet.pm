@@ -3,7 +3,8 @@ use Moo;
 use MooX::late;
 
 use LWP::UserAgent;
-use JSON qw(from_json);
+use JSON qw(from_json to_json);
+use Data::Dumper qw(Dumper);
 
 has token => (is => 'ro', required => 1);
 
@@ -17,9 +18,13 @@ sub ua {
 
 	my $ua = LWP::UserAgent->new;
 	$ua->timeout(10);
-	$ua->default_header("Authorization" => " Bearer " . $self->token);
+	$ua->default_header("Authorization" => "Bearer " . $self->token);
 	return $ua;
 }
+
+=head2 get_sheets
+
+=cut
 
 sub get_sheets {
 	my ($self) = @_;
@@ -70,8 +75,8 @@ sub get_columns {
 
 sub share_sheet {
 	my ($self, $sheet_id, $email, $access_level) = @_;
-	my $url = "$API_URL/sheet/$sheet_id/shares?sendEmail=true";
 
+	my $url = "$API_URL/sheet/$sheet_id/shares?sendEmail=true";
 	my $ua = $self->ua;
 	$ua->default_header("Content-Type" => "application/json");
 	my $data = to_json({email => $email, accessLevel => $access_level});
@@ -83,10 +88,68 @@ sub share_sheet {
 
 =head2 create_sheet
 
+  $w->create_sheet(
+    name    => 'Name of the sheet',
+	columns =>  [
+
+        { title => "Baked Good", type => 'TEXT_NUMBER', primary => 1 },
+    	{ title => "Baker",      type => 'CONTACT_LIST' },
+        { title => 'Price Per Item', type => 'TEXT_NUMBER' },
+        { title => "Gluten Free?", "type":"CHECKBOX", "symbol":"FLAG"},
+        { title => 'Status', type => 'PICKLIST', options => ['Started', 'Finished' , 'Delivered'] }
+   ]);
+
 =cut
 
 sub create_sheet {
+	my ($self, %args) = @_;
+
+	my $url = "$API_URL/sheets";
+	my $ua = $self->ua;
+	$ua->default_header("Content-Type" => "application/json");
+	my $data = to_json(\%args);
+	#warn $data;
+	#warn Dumper $ua->default_headers;
+
+	my $req = HTTP::Request->new( 'POST', $url );
+	$req->content( $data );
+	my $res = $ua->request( $req );
+	#my $res = $ua->post($url, Content => $data);
+
+	die $res->status_line if not $res->is_success;
+	return from_json $res->decoded_content;
 }
+
+=head2 add_column
+
+   $w->add_column($sheet_id, { title => 'Delivered', type => 'DATE', index => 5})
+
+=cut
+
+sub add_column {
+	my ($self, $sheet_id, $column) = @_;
+
+	my $url = "$API_URL/sheet/$sheet_id/columns";
+}
+
+=head2 insert_rows
+
+ =  json.dumps({"toTop":True, "rows":[ {"cells": [ 
+												    {"columnId":column_info[0]['id'], "value":"Brownies"},
+                                                    {"columnId":column_info[1]['id'], "value":"julieanne@smartsheet.com","strict": False},
+                                                    {"columnId":column_info[2]['id'], "value":"$1", "strict":False},
+                                                    {"columnId":column_info[3]['id'], "value":True},
+                                                    {"columnId":column_info[4]['id'], "value":"Finished"},
+                                                    {"columnId":column_info[5]['id'], "value": "None", "strict":False}]
+                                                   },
+	insert_Rows = Call._raw_request('/sheet/{}/rows'.format(sheet_id), header, row_Insert1)
+=cut
+
+sub insert_rows {
+	my ($self) = @_;
+	#insert_Rows = Call._raw_request('/sheet/{}/rows'.format(sheet_id), header, row_Insert1)
+}
+
 
 1;
 
