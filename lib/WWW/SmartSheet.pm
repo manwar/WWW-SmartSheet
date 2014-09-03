@@ -2,9 +2,15 @@ package WWW::SmartSheet;
 use Moo;
 use MooX::late;
 
+our $VERSION = '0.01';
+
+# Example error message, (status_line and content):
+# 400 Bad Request{"errorCode":5026,"message":"Your account has reached the maximum number of sheets allowed for your trial. To save additional sheets, you must upgrade to a paid plan."}
+
+use Carp ();
+use Data::Dumper qw(Dumper);
 use LWP::UserAgent;
 use JSON qw(from_json to_json);
-use Data::Dumper qw(Dumper);
 
 has token => (is => 'ro', required => 1);
 
@@ -16,7 +22,7 @@ my @ACCESS_LEVELS = qw(VIEWER EDITOR EDITOR_SHARE ADMIN);
 sub ua {
 	my ($self) = @_;
 
-	my $ua = LWP::UserAgent->new;
+	my $ua = LWP::UserAgent->new( agent => "WWW::SmartSheet v$VERSION https://github.com/szabgab/WWW-SmartSheet" );
 	$ua->timeout(10);
 	$ua->default_header("Authorization" => "Bearer " . $self->token);
 	$ua->default_header("Content-Type" => "application/json");
@@ -45,7 +51,7 @@ Given the number of the sheet, returns an array of the column definitions each c
   id
   primary ??
   options (for PICKLIST)
-  
+
 
 Probably it should be the name of the sheet.
 
@@ -54,11 +60,9 @@ Probably it should be the name of the sheet.
 # TODO how can I make sure that get_sheet is called if sheets is empty ? is that the lazy attribute?
 sub get_columns {
 	my ($self, $sheet_number) = @_;
-	
+
 	my $sheets = $self->sheets;
-	my $res = $self->ua->get("$API_URL/sheet/$sheets->[$sheet_number]{id}/columns");
-	die $res->status_line if not $res->is_success;
-	return from_json $res->decoded_content;
+	$self->_get("sheet/$sheets->[$sheet_number]{id}/columns");
 }
 
 =head2 share_sheet
@@ -96,6 +100,11 @@ sub create_sheet {
 	return $self->_post('sheets', \%args);
 }
 
+sub delete_sheet {
+	my ($self, $id) = @_;
+	$self->_delete("sheet/$id");
+}
+
 =head2 add_column
 
    $w->add_column($sheet_id, { title => 'Delivered', type => 'DATE', index => 5})
@@ -114,7 +123,7 @@ sub add_column {
         {
             toTop => JSON::true,
             rows => [ {
-                cells => [ 
+                cells => [
                     {"columnId":column_info[0]['id'], "value":"Brownies"},
                     {"columnId":column_info[1]['id'], "value":"julieanne@smartsheet.com","strict": False},
                     {"columnId":column_info[2]['id'], "value":"$1", "strict":False},
@@ -132,6 +141,13 @@ sub insert_rows {
 	#_post("sheet/$sheet_id/rows", $rows)
 }
 
+sub get_sheet_by_id {
+	my ($self, $id) = @_;
+	my $data = $self->_get("sheet/$id");
+	require WWW::SmartSheet::Sheet;
+	WWW::SmartSheet::Sheet->new($data);
+}
+
 sub _post {
 	my ($self, $path, $data) = @_;
 
@@ -146,7 +162,7 @@ sub _post {
 	my $res = $ua->request( $req );
 	#my $res = $ua->post($url, Content => $json);
 
-	die $res->status_line if not $res->is_success;
+	Carp::croak $res->status_line . $res->content if not $res->is_success;
 	return from_json $res->decoded_content;
 }
 
@@ -155,9 +171,19 @@ sub _get {
 
 	my $url = "$API_URL/$path";
 	my $res = $self->ua->get($url);
-	die $res->status_line if not $res->is_success;
+	Carp::croak $res->status_line . $res->content if not $res->is_success;
 	return from_json $res->decoded_content;
 }
+
+sub _delete {
+	my ($self, $path) = @_;
+
+	my $url = "$API_URL/$path";
+	my $res = $self->ua->delete($url);
+	Carp::croak $res->status_line . $res->content if not $res->is_success;
+	return from_json $res->decoded_content;
+}
+
 
 =head1 OTHER
 
