@@ -72,7 +72,7 @@ sub get_columns {
 sub share_sheet {
 	my ($self, $sheet_id, $email, $access_level) = @_;
 
-	$self->_post("sheet/$sheet_id/shares?sendEmail=true" {email => $email, accessLevel => $access_level});
+	$self->_post("sheet/$sheet_id/shares?sendEmail=true", {email => $email, accessLevel => $access_level});
 }
 
 =head2 create_sheet

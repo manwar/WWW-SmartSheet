@@ -30,10 +30,4 @@ my $c = $w->add_column($s->{result}{id}, { title => 'Delivered', type => 'DATE',
 
 #diag explain $c;
 
-$w->insert_rows($s->{result}{id}, 
-
-
-
-
-
-
+#$w->insert_rows($s->{result}{id}, 
