@@ -29,15 +29,61 @@ sub ua {
 	return $ua;
 }
 
-=head2 get_sheets
+=head2 get_current_user
+
+   returns a hash of info on the current user
+
+=cut
+
+sub get_current_user {
+
+  my ($self) = @_;
+
+  my $current_user = $self->_get('users/me');
+  return $current_user;
+
+}
+
+=head2 get_sheets($pagesize, $page)
+
+optional parameters default to $pagesize=100 and $page=1
+
+sample returned info:
+  {
+      "pageNumber": 1,
+      "pageSize": 100,
+      "totalPages": 1,
+      "totalCount": 2,
+      "data": [
+          {
+              "accessLevel": "OWNER",
+              "id": 4583173393803140,
+              "name": "sheet 1",
+              "permalink": "https://app.smartsheet.com/b/home?lx=xUefSOIYmn07iJJesvSHCQ",
+              "createdAt": "2015-06-05T20:05:29Z",
+              "modifiedAt": "2015-06-05T20:05:43Z"
+          },
+          {
+              "accessLevel": "OWNER",
+              "id": 2331373580117892,
+              "name": "sheet 2",
+              "permalink": "https://app.smartsheet.com/b/home?lx=xUefSOIYmn07iJJrthEFTG",
+              "createdAt": "2015-06-05T20:05:29Z",
+              "modifiedAt": "2015-06-05T20:05:43Z"
+          }
+      ]
+  }
 
 =cut
 
 sub get_sheets {
-	my ($self) = @_;
+	my ($self, $pagesize, $page) = @_;
 
-	my $all_sheets = $self->_get('sheets');
-	$self->sheets($all_sheets);
+	#use the defaults if no pagesize or page set http://smartsheet-platform.github.io/api-docs/#paging
+	if (!$pagesize) { $pagesize = 100;}
+	if (!$page) {$page = 1;}
+
+	my $all_sheets = $self->_get("sheets?pageSize=$pagesize&page=$page");
 	return $all_sheets;
 }
 
