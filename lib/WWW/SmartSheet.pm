@@ -131,6 +131,10 @@ sub add_column {
                     {"columnId":column_info[4]['id'], "value":"Finished"},
                     {"columnId":column_info[5]['id'], "value": "None", "strict":False}]
                                                    },
+                    ],
+        }
+      )
+
 =cut
 
 sub insert_rows {
