@@ -16,7 +16,7 @@ has token => (is => 'ro', required => 1);
 
 has sheets => (is => 'rw', isa => 'ArrayRef');
 
-my $API_URL = "https://api.smartsheet.com/1.1";
+my $API_URL = "https://api.smartsheet.com/2.0";
 my @ACCESS_LEVELS = qw(VIEWER EDITOR EDITOR_SHARE ADMIN);
 
 sub ua {
