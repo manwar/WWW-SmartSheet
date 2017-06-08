@@ -242,7 +242,7 @@ sub _delete {
 The code of this client is free software.
 Access to the services of L<Smartsheet|http://www.smartsheet.com/> requires registration and payment.
 
-L<API Documentation|http://www.smartsheet.com/developers/api-documentation>
+L<API Documentation|http://smartsheet-platform.github.io/api-docs/>
 
 =cut
 
