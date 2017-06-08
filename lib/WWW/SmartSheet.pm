@@ -79,11 +79,7 @@ sample returned info:
 sub get_sheets {
 	my ($self, $pagesize, $page) = @_;
 
-	#use the defaults if no pagesize or page set http://smartsheet-platform.github.io/api-docs/#paging
-	if (!$pagesize) { $pagesize = 100;}
-	if (!$page) {$page = 1;}
-
-	my $all_sheets = $self->_get("sheets?pageSize=$pagesize&page=$page");
+	my $all_sheets = $self->_get("sheets", $pagesize, $page);
 	return $all_sheets;
 }
 
@@ -217,9 +213,15 @@ sub _post {
 }
 
 sub _get {
-	my ($self, $path) = @_;
+	my ($self, $path, $pagesize, $page) = @_;
 
-	my $url = "$API_URL/$path";
+	#use the defaults if no pagesize or page set http://smartsheet-platform.github.io/api-docs/#paging
+	if (!$pagesize) { $pagesize = 100;}
+	if (!$page) {$page = 1;}
+
+	my $paramstr = "?pageSize=$pagesize&page=$page";
+	my $url = "$API_URL/$path$paramstr";
+
 	my $res = $self->ua->get($url);
 	Carp::croak $res->status_line . $res->content if not $res->is_success;
 	return from_json $res->decoded_content;
