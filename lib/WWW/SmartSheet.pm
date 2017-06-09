@@ -216,7 +216,7 @@ sub insert_rows {
 =head2
 get_sheet_by_id
 
-Given sheet id, returns the entire sheet (It appears to get ALL the rows) :
+Given sheet id, returns the entire sheet:
 
 {
     "accessLevel": "OWNER",
@@ -264,8 +264,8 @@ Given sheet id, returns the entire sheet (It appears to get ALL the rows) :
 =cut
 
 sub get_sheet_by_id {
-	my ($self, $id) = @_;
-	my $sheet = $self->_get("sheets/$id");
+	my ($self, $id, $pagesize, $page) = @_;
+	my $sheet = $self->_get("sheets/$id", $pagesize, $page);
 	return $sheet;
 }
 
