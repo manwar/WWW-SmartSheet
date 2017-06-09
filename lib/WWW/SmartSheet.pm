@@ -86,25 +86,51 @@ sub get_sheets {
 
 =head2 get_columns
 
-Given the number of the sheet, returns an array of the column definitions each column is a hash:
-  title
-  type (TEXT_NUMBER, PICKLIST, ... )
-  index
-  id
-  primary ??
-  options (for PICKLIST)
+http://smartsheet-platform.github.io/api-docs/#get-all-columns
+Takes a sheetid and returns "IndexResult Object containing an array of Column Objects"
 
 
-Probably it should be the name of the sheet.
+
+    Example Response:
+
+{
+    "pageNumber": 1,
+    "pageSize": 100,
+    "totalPages": 1,
+    "totalCount": 3,
+    "data": [
+        {
+            "id": 7960873114331012,
+            "index": 0,
+            "symbol": "STAR",
+            "title": "Favorite",
+            "type": "CHECKBOX",
+            "validation": false
+        },
+        {
+            "id": 642523719853956,
+            "index": 1,
+            "primary": true,
+            "title": "Primary Column",
+            "type": "TEXT_NUMBER",
+            "validation": false
+        },
+        {
+            "id": 5146123347224452,
+            "index": 2,
+            "title": "Status",
+            "type": "PICKLIST",
+            "validation": false
+        }
+    ]
+}
 
 =cut
 
-# TODO how can I make sure that get_sheet is called if sheets is empty ? is that the lazy attribute?
 sub get_columns {
-	my ($self, $sheet_number) = @_;
-
-	my $sheets = $self->sheets;
-	$self->_get("sheet/$sheets->[$sheet_number]{id}/columns");
+	my ($self, $sheetid, $pagesize, $page) = @_;
+	my $cols = $self->_get("sheets/$sheetid/columns", $pagesize, $page);
+	return $cols;
 }
 
 =head2 share_sheet
