@@ -213,11 +213,60 @@ sub insert_rows {
 	#_post("sheet/$sheet_id/rows", $rows)
 }
 
+=head2
+get_sheet_by_id
+
+Given sheet id, returns the entire sheet (It appears to get ALL the rows) :
+
+{
+    "accessLevel": "OWNER",
+    "projectSettings": {
+        "workingDays": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY"
+        ],
+        "nonWorkingDays": [
+            "2018-01-01"
+        ],
+        "lengthOfDay": 6
+    },
+    "columns": [
+        {
+            "id": 4583173393803140,
+            "index": 0,
+            "primary": true,
+            "title": "Primary Column",
+            "type": "TEXT_NUMBER",
+            "validation": false
+        },
+        {
+            "id": 2331373580117892,
+            "index": 1,
+            "options": [
+                "new",
+                "in progress",
+                "completed"
+            ],
+            "title": "status",
+            "type": "PICKLIST",
+            "validation": true
+        }
+    ],
+    "createdAt": "2012-07-24T18:22:29-07:00",
+    "id": 4583173393803140,
+    "modifiedAt": "2012-07-24T18:30:52-07:00",
+    "name": "sheet 1",
+    "permalink": "https://app.smartsheet.com/b/home?lx=pWNSDH9itjBXxBzFmyf-5w",
+    "rows": []
+}
+
+=cut
+
 sub get_sheet_by_id {
 	my ($self, $id) = @_;
-	my $data = $self->_get("sheet/$id");
-	require WWW::SmartSheet::Sheet;
-	WWW::SmartSheet::Sheet->new($data);
+	my $sheet = $self->_get("sheets/$id");
+	return $sheet;
 }
 
 sub _post {
