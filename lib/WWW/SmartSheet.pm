@@ -79,7 +79,11 @@ sample returned info:
 sub get_sheets {
 	my ($self, $pagesize, $page) = @_;
 
-	my $all_sheets = $self->_get("sheets", $pagesize, $page);
+	my $all_sheets = $self->_get("sheets",
+				     ("pageSize" => $pagesize,
+				      "page" => $page,
+				     )
+				    );
 	return $all_sheets;
 }
 
@@ -129,7 +133,11 @@ Takes a sheetid and returns "IndexResult Object containing an array of Column Ob
 
 sub get_columns {
 	my ($self, $sheetid, $pagesize, $page) = @_;
-	my $cols = $self->_get("sheets/$sheetid/columns", $pagesize, $page);
+	my $cols = $self->_get("sheets/$sheetid/columns",
+				     ("pageSize" => $pagesize,
+				      "page" => $page,
+				     )
+			      );
 	return $cols;
 }
 
@@ -265,7 +273,11 @@ Given sheet id, returns the entire sheet:
 
 sub get_sheet_by_id {
 	my ($self, $id, $pagesize, $page) = @_;
-	my $sheet = $self->_get("sheets/$id", $pagesize, $page);
+	my $sheet = $self->_get("sheets/$id",
+				     ("pageSize" => $pagesize,
+				      "page" => $page,
+				     )
+			       );
 	return $sheet;
 }
 
@@ -288,14 +300,28 @@ sub _post {
 }
 
 sub _get {
-	my ($self, $path, $pagesize, $page) = @_;
+	my ($self, $path, %params) = @_;
 
-	#use the defaults if no pagesize or page set http://smartsheet-platform.github.io/api-docs/#paging
-	if (!$pagesize) { $pagesize = 100;}
-	if (!$page) {$page = 1;}
+	my $paramstr;
+	my $url = "$API_URL/$path";
 
-	my $paramstr = "?pageSize=$pagesize&page=$page";
-	my $url = "$API_URL/$path$paramstr";
+	foreach my $param (keys %params) {
+
+	  if (!$params{$param}) {
+	    # ignore empty params
+	    next;
+	  }
+
+	  $paramstr .= $param . "=" . $params{$param} . "&";
+
+	}
+
+	if ($paramstr) {
+	  $paramstr =~ s/&$//;
+	  $url .= "?$paramstr";
+	}
+
+	# print "URL: $url\n";
 
 	my $res = $self->ua->get($url);
 	Carp::croak $res->status_line . $res->content if not $res->is_success;
