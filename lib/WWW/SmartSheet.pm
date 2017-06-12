@@ -147,12 +147,34 @@ sub get_columns {
   email => 'foo@examples.com',
   access_level => one of the following strings: VIEWER EDITOR EDITOR_SHARE ADMIN
 
+  Note: This only creates a new share and will not update or delete an exising one
+
+  Sample returned data:
+  {
+    "resultCode": 0,
+    "result": [
+        {
+            "id": "AAAFeF82FOeE",
+            "type": "USER",
+            "userId": 1539725208119172,
+            "email": "jane.doe@smartsheet.com",
+            "name": "Jane Doe",
+            "accessLevel": "EDITOR",
+            "scope": "ITEM"
+        }
+    ],
+    "message": "SUCCESS"
+  }
+
 =cut
 
 sub share_sheet {
-	my ($self, $sheet_id, $email, $access_level) = @_;
+	my ($self, $sheetid, $email, $access_level) = @_;
 
-	$self->_post("sheet/$sheet_id/shares?sendEmail=true", {email => $email, accessLevel => $access_level});
+	my $result = $self->_post("sheets/$sheetid/shares?sendEmail=true", {email => $email, accessLevel => $access_level});
+
+	return $result;
+
 }
 
 =head2 create_sheet
@@ -287,13 +309,10 @@ sub _post {
 	my $url = "$API_URL/$path";
 	my $ua = $self->ua;
 	my $json = to_json($data);
-	#warn $json;
-	#warn Dumper $ua->default_headers;
 
 	my $req = HTTP::Request->new( 'POST', $url );
 	$req->content( $json );
 	my $res = $ua->request( $req );
-	#my $res = $ua->post($url, Content => $json);
 
 	Carp::croak $res->status_line . $res->content if not $res->is_success;
 	return from_json $res->decoded_content;
@@ -347,7 +366,11 @@ L<API Documentation|http://smartsheet-platform.github.io/api-docs/>
 
 =cut
 
+=head2 TODO
 
+Probably needs a get_all_sheet_shares, update_sheet_share, delete_sheet_share
+
+=cut
 
 1;
 
