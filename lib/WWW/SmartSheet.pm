@@ -277,14 +277,46 @@ sub delete_sheet {
 
 =head2 add_column
 
-   $w->add_column($sheet_id, { title => 'Delivered', type => 'DATE', index => 5})
+   multiple columns can be added at one time
+
+   $w->add_column(
+                 $sheet_id,
+                          [
+                            { title => 'Delivered', type => 'DATE', index => 5},
+                            { title => 'AnotherCol', type => 'TEXT_NUMBER', index => 5}
+                          ]
+                  );
+
+   returns
+
+  {
+    "resultCode": 0,
+    "result": [
+        {
+            "id": 4503594425063547,
+            "index": 4,
+            "title": "New Date Column",
+            "type": "DATE",
+            "validation": true,
+            "width": 150
+        },
+        {
+            "id": 9007194052434043,
+            "index": 4,
+            "title": "New Picklist Column 1",
+            "type": "TEST_NUMBER",
+            "width": 150
+        }
+    ],
+    "message": "SUCCESS"
+  }
 
 =cut
 
 sub add_column {
 	my ($self, $sheet_id, $column) = @_;
 
-	return $self->_post("sheet/$sheet_id/columns", $column );
+	return $self->_post("sheets/$sheet_id/columns", $column );
 }
 
 =head2 insert_rows
