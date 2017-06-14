@@ -179,16 +179,82 @@ sub share_sheet {
 
 =head2 create_sheet
 
+Uses "Create Sheet in 'Sheets' folder" (http://smartsheet-platform.github.io/api-docs/#create-sheet-in-quot-sheets-quot-folder)
+
+Requires, name of sheet, columns (title, primary, type)
+
   $w->create_sheet(
-    name    => 'Name of the sheet',
+        name    => 'Name of the sheet',
 	columns =>  [
 
-        { title => "Baked Good", type => 'TEXT_NUMBER', primary => 1 },
-    	{ title => "Baker",      type => 'CONTACT_LIST' },
-        { title => 'Price Per Item', type => 'TEXT_NUMBER' },
-        { title => "Gluten Free?", "type":"CHECKBOX", "symbol":"FLAG"},
-        { title => 'Status', type => 'PICKLIST', options => ['Started', 'Finished' , 'Delivered'] }
-   ]);
+                    { title => "Baked Good", type => 'TEXT_NUMBER', primary => 1 },
+                    { title => 'Baker', type => 'CONTACT_LIST' },
+                    { title => 'Price Per Item', type => 'TEXT_NUMBER' },
+                    { title => "Gluten Free?", "type" => "CHECKBOX", "symbol" => "FLAG"},
+                    { title => 'Status', type => 'PICKLIST', options => ['Started', 'Finished' , 'Delivered'] }
+   ]
+ );
+
+Returns:
+     {
+          'resultCode' => 0,
+          'result' => {
+                        'id' => '2331373580117892',
+                        'permalink' => 'https://app.smartsheet.com/b/home?lx=0HHzeGnfHik-N13ZT8pU7g',
+                        'name' => 'Name of the sheet',
+                        'accessLevel' => 'OWNER',
+                        'columns' => [
+                                       {
+                                         'index' => 0,
+                                         'primary' => bless( do{\(my $o = 1)}, 'JSON::PP::Boolean' ),
+                                         'width' => 150,
+                                         'type' => 'TEXT_NUMBER',
+                                         'validation' => bless( do{\(my $o = 0)}, 'JSON::PP::Boolean' ),
+                                         'title' => 'Baked Good',
+                                         'id' => '7960873114331012'
+                                       },
+                                       {
+                                         'id' => '6430209165167777',
+                                         'validation' => $VAR1->{'result'}{'columns'}[0]{'validation'},
+                                         'title' => 'Baker',
+                                         'type' => 'CONTACT_LIST',
+                                         'width' => 150,
+                                         'index' => 1
+                                       },
+                                       {
+                                         'validation' => $VAR1->{'result'}{'columns'}[0]{'validation'},
+                                         'title' => 'Price Per Item',
+                                         'id' => '3580578411771296',
+                                         'type' => 'TEXT_NUMBER',
+                                         'width' => 150,
+                                         'index' => 2
+                                       },
+                                       {
+                                         'id' => '7306226134567921',
+                                         'validation' => $VAR1->{'result'}{'columns'}[0]{'validation'},
+                                         'title' => 'Gluten Free?',
+                                         'symbol' => 'FLAG',
+                                         'type' => 'CHECKBOX',
+                                         'width' => 150,
+                                         'index' => 3
+                                       },
+                                       {
+                                         'validation' => $VAR1->{'result'}{'columns'}[0]{'validation'},
+                                         'title' => 'Status',
+                                         'id' => '1425783243468763',
+                                         'type' => 'PICKLIST',
+                                         'options' => [
+                                                        'Started',
+                                                        'Finished',
+                                                        'Delivered'
+                                                      ],
+                                         'width' => 150,
+                                         'index' => 4
+                                       }
+                                     ]
+                      },
+          'message' => 'SUCCESS'
+        };
 
 =cut
 
