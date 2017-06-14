@@ -264,9 +264,15 @@ sub create_sheet {
 	return $self->_post('sheets', \%args);
 }
 
+=head2 delete_sheet
+
+Given sheetid, deletes the sheet.
+
+=cut
+
 sub delete_sheet {
 	my ($self, $id) = @_;
-	$self->_delete("sheet/$id");
+	$self->_delete("sheets/$id");
 }
 
 =head2 add_column
