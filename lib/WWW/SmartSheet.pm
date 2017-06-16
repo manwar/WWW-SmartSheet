@@ -321,30 +321,49 @@ sub add_column {
 
 =head2 insert_rows
 
-    $w->insert_rows($sheet_id,
-        {
-            toTop => JSON::true,
-            rows => [ {
-                cells => [
-                    {"columnId":column_info[0]['id'], "value":"Brownies"},
-                    {"columnId":column_info[1]['id'], "value":"julieanne@smartsheet.com","strict": False},
-                    {"columnId":column_info[2]['id'], "value":"$1", "strict":False},
-                    {"columnId":column_info[3]['id'], "value":True},
-                    {"columnId":column_info[4]['id'], "value":"Finished"},
-                    {"columnId":column_info[5]['id'], "value": "None", "strict":False}]
-                                                   },
-                    ],
-        }
-      )
+
+curl https://api.smartsheet.com/2.0/sheets/{sheetId}/rows \
+-H "Authorization: Bearer ll352u9jujauoqz4gstvsae05" \
+-H "Content-Type: application/json" \
+-X POST \
+-d '[{"toTop":true, "cells": [ {"columnId": 7960873114331012, "value": true}, {"columnId": 642523719853956, "value": "New status", "strict": false} ] }, {"toTop":true, "cells": [ {"columnId": 7960873114331012, "value": true}, {"columnId": 642523719853956, "value": "New status", "strict": false} ] }]'
+
+$location can be: toTop, toBottom, parentId, siblingId, above
+
+$w->insert_rows($sheet_id, $location, @rows);
+
+@rows should be something like
+[
+ [
+    {"columnId" =>  7960873114331012, "value" =>  JSON::true},
+    {"columnId" =>  642523719853956, "value" =>  "New status 1", "strict" =>  false}
+ ],
+ [
+    {"columnId" =>  7960873114331012, "value" =>  JSON::false},
+    {"columnId" =>  642523719853956, "value" =>  "New status 2", "strict" =>  false}
+ ]
+]
+
+Note: JSON::true instead of "true" or 1 is necessary
+
+TODO: deal with $location of parentId or siblingId
+For now just assuming either toTop or toBottome
 
 =cut
 
 sub insert_rows {
-	my ($self, $sheet_id, $rows, %args) = @_;
+	my ($self, $sheet_id, $loc, @rows) = @_;
 
-	my $res = $self->ua->get("$API_URL/sheet/$sheet_id/columns");
+	my @full_rows;
 
-	#_post("sheet/$sheet_id/rows", $rows)
+	foreach my $row (@rows) {
+
+	  my %r = ($loc => 1, "cells" => $row);
+	  push (@full_rows, \%r);
+
+	}
+
+	return $self->_post("sheets/$sheet_id/rows", \@full_rows);
 }
 
 =head2
@@ -473,6 +492,9 @@ L<API Documentation|http://smartsheet-platform.github.io/api-docs/>
 =head2 TODO
 
 Probably needs a get_all_sheet_shares, update_sheet_share, delete_sheet_share
+
+insert_rows needs to deal with $location of parentId or siblingId
+
 
 =cut
 
