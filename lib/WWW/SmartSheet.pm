@@ -328,7 +328,7 @@ curl https://api.smartsheet.com/2.0/sheets/{sheetId}/rows \
 -X POST \
 -d '[{"toTop":true, "cells": [ {"columnId": 7960873114331012, "value": true}, {"columnId": 642523719853956, "value": "New status", "strict": false} ] }, {"toTop":true, "cells": [ {"columnId": 7960873114331012, "value": true}, {"columnId": 642523719853956, "value": "New status", "strict": false} ] }]'
 
-$location can be: toTop, toBottom, parentId, siblingId, above
+$location can be: toTop, toBottom, parentId=<rowid>, or "siblingId=<rowid>,above" (or leave off ,above for below)
 
 $w->insert_rows($sheet_id, $location, @rows);
 
@@ -346,9 +346,6 @@ $w->insert_rows($sheet_id, $location, @rows);
 
 Note: JSON::true instead of "true" or 1 is necessary
 
-TODO: deal with $location of parentId or siblingId
-For now just assuming either toTop or toBottome
-
 =cut
 
 sub insert_rows {
@@ -358,7 +355,30 @@ sub insert_rows {
 
 	foreach my $row (@rows) {
 
-	  my %r = ($loc => 1, "cells" => $row);
+	  my $lv = 1;
+
+	  # my %r = ($loc => $lv, "cells" => $row);
+	  my %r;
+	  $r{"cells"} = $row;
+
+	  if ($loc =~ m/(=)/) {
+
+	    my $l = $loc;
+	    if ($l =~ m/,above/) {
+	      $l =~ s/,above//;
+	      $r{"above"} = 1;
+	    }
+	    my ($k, $v) = split(/=/, $l);
+	    if ($v) {
+	      $r{$k}=$v;
+	    }
+
+	  } else {
+
+	    $r{"$loc"} = 1;
+
+	  }
+
 	  push (@full_rows, \%r);
 
 	}
@@ -493,10 +513,6 @@ L<API Documentation|http://smartsheet-platform.github.io/api-docs/>
 
 Probably needs a get_all_sheet_shares, update_sheet_share, delete_sheet_share
 
-insert_rows needs to deal with $location of parentId or siblingId
-
-
 =cut
 
 1;
-
