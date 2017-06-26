@@ -511,7 +511,7 @@ L<API Documentation|http://smartsheet-platform.github.io/api-docs/>
 
 =head2 TODO
 
-Probably needs a get_all_sheet_shares, update_sheet_share, delete_sheet_share
+Probably needs a get_all_sheet_shares, update_sheet_share, delete_sheet_share, delete_column
 
 =cut
 
