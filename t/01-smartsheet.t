@@ -8,7 +8,7 @@ use Test::Deep;
 
 my $msg;
 my $token = $ENV{TOKEN};
-diag "TOKEN: $token";
+diag "TOKEN: $token" if defined $token;
 plan skip_all => 'Works only if API token provided in he TOKEN environment variable'
 	if not $token;
 
