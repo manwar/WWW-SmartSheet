@@ -1,9 +1,12 @@
 Revision history for WWW::SmartSheet
 
+0.03  2018-02-15 MANWAR
+      - Tidied up version.
+
 0.02  2018-02-13 MANWAR
       - Merged PR #2, upgrading API v2, thanks @lth2h.
       - Updated github repo details.
       - Minor tidied up test script.
 
 0.01  2013-10-03 SZABGAB
-      Experimental release
+      - Experimental release

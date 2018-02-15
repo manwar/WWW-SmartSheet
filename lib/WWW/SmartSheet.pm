@@ -2,7 +2,7 @@ package WWW::SmartSheet;
 use Moo;
 use MooX::late;
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 # Example error message, (status_line and content):
 # 400 Bad Request{"errorCode":5026,"message":"Your account has reached the maximum number of sheets allowed for your trial. To save additional sheets, you must upgrade to a paid plan."}
