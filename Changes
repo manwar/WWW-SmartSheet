@@ -1,5 +1,11 @@
 Revision history for WWW::SmartSheet
 
+0.04  2018-02-16 MANWAR
+      - Fixed missing abstract in pod.
+      - Stopped using podweaver.
+      - Tidied up code in general.
+      - Tidied up dist.ini.
+
 0.03  2018-02-15 MANWAR
       - Tidied up version.
 
