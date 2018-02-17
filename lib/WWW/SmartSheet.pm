@@ -1,6 +1,6 @@
 package WWW::SmartSheet;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Moo;
 use MooX::late;
