@@ -1,5 +1,8 @@
 Revision history for WWW::SmartSheet
 
+0.06  2018-02-18 MANWAR
+      - Added provides as suggested by CPANTS.
+
 0.05  2018-02-17 MANWAR
       - Added minimum perl version as suggested by CPANTS.
 
